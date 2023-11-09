@@ -13,10 +13,22 @@ class CityGrid:
         self.place_obstacles(obstacle_coverage)
 
     def place_obstacles(self, obstacle_coverage):
-        # Randomly place blocked blocks with given coverage
         num_obstacles = int(obstacle_coverage * self.N * self.M)
         indices = np.random.choice(self.N * self.M, num_obstacles, replace=False)
         self.grid.flat[indices] = 1
+
+    def place_tower(self, row, col, radius):
+        # Mark the tower on the grid
+        self.grid[row, col] = 2  # 2 represents tower
+
+        cmap = plt.get_cmap('tab10')
+        tower_color = cmap(6)
+        plt.scatter([col], [row], color=[tower_color], marker='s', s=100, linewidths=2, edgecolors='black', label='Tower')
+
+        # Mark the coverage area of the tower
+        for i in range(max(0, row - radius), min(self.N, row + radius + 1)):
+            for j in range(max(0, col - radius), min(self.M, col + radius + 1)):
+                self.grid[i, j] = max(self.grid[i, j], 3)  # 3 represents coverage area
 
     def visualize_grid(self):
         cmap = plt.get_cmap('tab10')
@@ -37,4 +49,5 @@ class CityGrid:
 
 # Пример использования:
 city = CityGrid(20, 20, 0.3)
+city.place_tower(8, 4, 2)
 city.visualize_grid()
