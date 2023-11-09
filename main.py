@@ -30,6 +30,21 @@ class CityGrid:
             for j in range(max(0, col - radius), min(self.M, col + radius + 1)):
                 self.grid[i, j] = max(self.grid[i, j], 3)  # 3 represents coverage area
 
+    def place_optimal_towers(self, radius):
+        # Initialize a set to keep track of free blocks
+        free_blocks = set((i, j) for i in range(self.N) for j in range(self.M) if self.grid[i, j] == 0)
+
+        while free_blocks:
+            # Choose a random free block
+            row, col = free_blocks.pop()
+
+            # Place a tower at the chosen block
+            self.place_tower(row, col, radius)
+
+            # Remove all free blocks covered by the tower
+            free_blocks -= {(i, j) for i in range(max(0, row - radius), min(self.N, row + radius + 1))
+                            for j in range(max(0, col - radius), min(self.M, col + radius + 1))}
+
     def visualize_grid(self):
         cmap = plt.get_cmap('tab10')
         bounds = [-0.5, 0.5, 1.5, 2.5, 3.5]
@@ -49,5 +64,5 @@ class CityGrid:
 
 # Пример использования:
 city = CityGrid(20, 20, 0.3)
-city.place_tower(8, 4, 2)
+city.place_optimal_towers(2)
 city.visualize_grid()
